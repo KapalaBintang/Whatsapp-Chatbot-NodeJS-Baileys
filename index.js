@@ -13,6 +13,7 @@ async function connectWhatsapp() {
   });
 
   const greetedUsers = new Set();
+  const respondedUsers = new Set();
 
   socket.ev.on("creds.update", auth.saveCreds);
   socket.ev.on("connection.update", async ({ connection }) => {
@@ -30,9 +31,33 @@ async function connectWhatsapp() {
     const pesan = (chat.message?.extendedTextMessage?.text ?? chat.message?.ephemeralMessage?.message?.extendedTextMessage?.text ?? chat.message?.conversation)?.toLowerCase() || "";
     const command = pesan.split(" ")[0];
 
-    const start = "Selamat datang, ini beberapa perintah yang dapat membantumu:\n1. .produk: untuk melihat produk digital kami.\n2. .sticker: mengubah gambar yang kamu kirim menjadi stiker";
+    const namaGrup = `*Metroneusantara*`;
+    const commandChat = `*_1_*`;
 
-    const halo = `Selamat datang, apa yang Anda butuhkan?\n1. Produk digital: Anda dapat mengunjungi https://www.instagram.com/metroneusantara/ untuk melihat produk digital kami.\n2. Cara memesan: Hubungi ${process.env.PHONE_NUMBER} untuk memesan produk digital kami.`;
+    const start = `Halo Selamat datang di komunitas ${namaGrup}. komunitas yang bergerak dibidang layanan jasa dan siap membantu mempermudah segala perkerjaanmu!!\n\nDisini kami menyediakan beberapa layanan jasa,Diantaranya :\n\n1.Graphic designer(Poster,Banner,dll.)
+2.PowerPoint Designer
+3.Infografis designer
+4.E-Book
+5.Web Development
+6.Web design\n
+Untuk melihat contoh nyata dari produk kami boleh langsung mengunjungi beberapa laman situs dibawah ini:\n
+Website : https://lynk.id/metroneusantara
+Instagram : https://www.instagram.com/metroneusantara?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==
+TikTok : https://www.tiktok.com/@metroneu.digital?_t=8ovxuO1nD3I&_r=1\n
+Jika ingin me-request desain yg ingin dibuat tanpa biaya tambahan silahkan hubungi nomor dibawah ini
+wa : +62 851-4232-2487 atau _klik link dibawah ini_
+link : https://wa.me/6285142322487?text=Halo,%20saya%20ingin%20bertanya%20mengenai%20produk
+\n
+Terimahkasih telah menghubungi Metroneusantara
+Have a Nice day
+`;
+
+    const response = `Hi Kak, Mohon menunggu sebentar, salah satu rekan Team Support Metroneusantara akan segera membalas pesan anda 😊\n\nPENTING:
+> Follow IG ☞ https://www.instagram.com/metroneusantara?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==
+> Follow TikTok ☞ https://www.tiktok.com/@metroneu.digital?_t=8ovxuO1nD3I&_r=1
+> kunjungi laman web  ☞ https://lynk.id/metroneusantara
+Have a Nice Day 😇.
+`;
 
     if (!greetedUsers.has(remoteJid)) {
       // Kirim pesan sambutan
@@ -40,13 +65,19 @@ async function connectWhatsapp() {
         text: start,
       });
 
-      // Tandai pengguna sebagai sudah menerima pesan
+      // Tandai pengguna sebagai sudah menerima pesan pertama
       greetedUsers.add(remoteJid);
+    } else if (!respondedUsers.has(remoteJid)) {
+      // Kirim pesan kedua hanya jika pesan pertama sudah dikirim dan pesan kedua belum dikirim
+      await socket.sendMessage(remoteJid, { text: response });
+
+      // Tandai pengguna sebagai sudah menerima pesan kedua
+      respondedUsers.add(remoteJid);
     }
 
     switch (command) {
-      case ".produk":
-        await socket.sendMessage(chat.key.remoteJid, { text: halo });
+      case "1":
+        await socket.sendMessage(chat.key.remoteJid, { text: response });
         break;
 
       case ".h":
