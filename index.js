@@ -2,6 +2,9 @@ const { makeWASocket, useMultiFileAuthState, downloadContentFromMessage } = requ
 const pino = require("pino");
 require("dotenv").config();
 const { createSticker, StickerTypes } = require("wa-sticker-formatter");
+const http = require("http");
+
+const PORT = process.env.PORT || 3000;
 
 async function connectWhatsapp() {
   const auth = await useMultiFileAuthState("session");
@@ -19,6 +22,7 @@ async function connectWhatsapp() {
   socket.ev.on("connection.update", async ({ connection }) => {
     if (connection === "open") {
       console.log("BOT WHATSAPP SUDAH SIAP✅ -- BY KAPALA BINTANG");
+      console.log(connection);
     } else if (connection === "close") {
       await connectWhatsapp();
     }
@@ -127,3 +131,12 @@ Have a Nice Day 😇.
 }
 
 connectWhatsapp();
+
+const server = http.createServer((req, res) => {
+  res.writeHead(200, { "Content-Type": "text/plain" });
+  res.end("WhatsApp Bot is running!");
+});
+
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
