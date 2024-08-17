@@ -1,9 +1,10 @@
+const express = require("express"); // Menggunakan require untuk konsistensi
 const { makeWASocket, useMultiFileAuthState, downloadContentFromMessage } = require("@whiskeysockets/baileys");
 const pino = require("pino");
 require("dotenv").config();
 const { createSticker, StickerTypes } = require("wa-sticker-formatter");
-const http = require("http");
 
+const app = express();
 const PORT = process.env.PORT || 3000;
 
 async function connectWhatsapp() {
@@ -22,8 +23,9 @@ async function connectWhatsapp() {
   socket.ev.on("connection.update", async ({ connection }) => {
     if (connection === "open") {
       console.log("BOT WHATSAPP SUDAH SIAP✅ -- BY KAPALA BINTANG");
-      console.log(connection);
     } else if (connection === "close") {
+      // Pastikan koneksi sebelumnya sudah benar-benar terputus
+      console.log("Koneksi terputus, mencoba menghubungkan kembali...");
       await connectWhatsapp();
     }
   });
@@ -80,10 +82,6 @@ Have a Nice Day 😇.
     }
 
     switch (command) {
-      case "1":
-        await socket.sendMessage(chat.key.remoteJid, { text: response });
-        break;
-
       case ".h":
       case ".hidetag":
         const args = pesan.split(" ").slice(1).join(" ");
@@ -132,11 +130,10 @@ Have a Nice Day 😇.
 
 connectWhatsapp();
 
-const server = http.createServer((req, res) => {
-  res.writeHead(200, { "Content-Type": "text/plain" });
-  res.end("WhatsApp Bot is running!");
+app.get("/", (req, res) => {
+  res.send("WhatsApp Bot is running!");
 });
 
-server.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
