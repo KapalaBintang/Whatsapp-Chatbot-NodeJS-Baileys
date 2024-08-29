@@ -24,6 +24,7 @@ async function connectWhatsapp() {
     if (connection === "open") {
       console.log("BOT WHATSAPP SUDAH SIAP✅ -- BY KAPALA BINTANG");
     } else if (connection === "close") {
+      console.log(connection);
       // Pastikan koneksi sebelumnya sudah benar-benar terputus
       console.log("Koneksi terputus, mencoba menghubungkan kembali...");
       await connectWhatsapp();
